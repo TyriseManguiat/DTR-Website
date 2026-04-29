@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTR-Website", "DTR-Website\DTR-Website.csproj", "{79BDE8FE-7A82-428F-92B3-87BE96AF9D77}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{79BDE8FE-7A82-428F-92B3-87BE96AF9D77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79BDE8FE-7A82-428F-92B3-87BE96AF9D77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79BDE8FE-7A82-428F-92B3-87BE96AF9D77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79BDE8FE-7A82-428F-92B3-87BE96AF9D77}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
