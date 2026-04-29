@@ -7,5 +7,18 @@ export default defineConfig({
   build: {
     outDir: '../wwwroot',
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        entryFileNames: 'assets/app.js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.names.some((name) => name.endsWith('.css'))) {
+            return 'assets/app.css'
+          }
+
+          return 'assets/[name][extname]'
+        },
+      },
+    },
   },
 })
