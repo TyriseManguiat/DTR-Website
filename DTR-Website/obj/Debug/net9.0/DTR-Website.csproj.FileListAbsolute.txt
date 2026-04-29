@@ -23,11 +23,9 @@
 /Users/TaiManguiat/RiderProjects/DTR-Website/DTR-Website/obj/Debug/net9.0/rjsmrazor.dswa.cache.json
 /Users/TaiManguiat/RiderProjects/DTR-Website/DTR-Website/obj/Debug/net9.0/rjsmcshtml.dswa.cache.json
 /Users/TaiManguiat/RiderProjects/DTR-Website/DTR-Website/obj/Debug/net9.0/scopedcss/bundle/DTR-Website.styles.css
-/Users/TaiManguiat/RiderProjects/DTR-Website/DTR-Website/obj/Debug/net9.0/compressed/nts3k92mhj-5kfsur3ish.gz
-/Users/TaiManguiat/RiderProjects/DTR-Website/DTR-Website/obj/Debug/net9.0/compressed/giwu8ucezf-w8cpot8hqm.gz
 /Users/TaiManguiat/RiderProjects/DTR-Website/DTR-Website/obj/Debug/net9.0/compressed/jvos79n597-180dmtdpho.gz
 /Users/TaiManguiat/RiderProjects/DTR-Website/DTR-Website/obj/Debug/net9.0/compressed/1x0s8secfc-g3h7a9wx5y.gz
-/Users/TaiManguiat/RiderProjects/DTR-Website/DTR-Website/obj/Debug/net9.0/compressed/2090re7vku-ylfqe5ny6c.gz
+/Users/TaiManguiat/RiderProjects/DTR-Website/DTR-Website/obj/Debug/net9.0/compressed/2090re7vku-d15t5kdhvp.gz
 /Users/TaiManguiat/RiderProjects/DTR-Website/DTR-Website/obj/Debug/net9.0/staticwebassets.build.json
 /Users/TaiManguiat/RiderProjects/DTR-Website/DTR-Website/obj/Debug/net9.0/staticwebassets.build.json.cache
 /Users/TaiManguiat/RiderProjects/DTR-Website/DTR-Website/obj/Debug/net9.0/staticwebassets.development.json
@@ -37,3 +35,5 @@
 /Users/TaiManguiat/RiderProjects/DTR-Website/DTR-Website/obj/Debug/net9.0/DTR-Website.pdb
 /Users/TaiManguiat/RiderProjects/DTR-Website/DTR-Website/obj/Debug/net9.0/DTR-Website.genruntimeconfig.cache
 /Users/TaiManguiat/RiderProjects/DTR-Website/DTR-Website/obj/Debug/net9.0/ref/DTR-Website.dll
+/Users/TaiManguiat/RiderProjects/DTR-Website/DTR-Website/obj/Debug/net9.0/compressed/cqsqfq1aqc-5nuku30sw9.gz
+/Users/TaiManguiat/RiderProjects/DTR-Website/DTR-Website/obj/Debug/net9.0/compressed/rwq3h7nnyd-284p9m0dur.gz
