@@ -1,21 +1,43 @@
-import type { RequestItem, TimeLog } from './types'
+import type { AppUser, EmployeeStatus, RequestItem, TimeLog } from './types'
 
-export const employeeProfile = {
-  name: 'Tai Manguiat',
-  initials: 'TM',
-  employeeId: 'EMP-1024',
-  department: 'Operations',
-  position: 'DTR Coordinator',
-  email: 'tai.manguiat@company.com',
-  mobile: '+63 917 555 0142',
-  shiftSchedule: '8:00 AM - 5:00 PM',
-  manager: 'A. Rivera',
-  location: 'Main Lobby Hub',
-}
+export const mockUsers: AppUser[] = [
+  {
+    id: 'emp-1024',
+    role: 'employee',
+    name: 'Tai Manguiat',
+    initials: 'TM',
+    employeeId: 'EMP-1024',
+    department: 'Operations',
+    position: 'DTR Coordinator',
+    email: 'tai.manguiat@company.com',
+    mobile: '+63 917 555 0142',
+    shiftSchedule: '8:00 AM - 5:00 PM',
+    manager: 'A. Rivera',
+    location: 'Main Lobby Hub',
+    password: 'employee123',
+  },
+  {
+    id: 'adm-0001',
+    role: 'admin',
+    name: 'Andrea Rivera',
+    initials: 'AR',
+    employeeId: 'ADM-0001',
+    department: 'Operations',
+    position: 'DTR Administrator',
+    email: 'andrea.rivera@company.com',
+    mobile: '+63 917 555 0101',
+    shiftSchedule: '8:00 AM - 5:00 PM',
+    manager: 'HR Director',
+    location: 'Operations Command Desk',
+    password: 'admin123',
+  },
+]
 
-export const timeLogs: TimeLog[] = [
+export const employeeTimeLogs: TimeLog[] = [
   {
     id: 'apr28',
+    employeeName: 'Tai Manguiat',
+    department: 'Operations',
     dayLabel: 'TUE',
     dateNumber: '28',
     monthLabel: 'APR',
@@ -27,6 +49,8 @@ export const timeLogs: TimeLog[] = [
   },
   {
     id: 'apr27',
+    employeeName: 'Tai Manguiat',
+    department: 'Operations',
     dayLabel: 'MON',
     dateNumber: '27',
     monthLabel: 'APR',
@@ -38,6 +62,8 @@ export const timeLogs: TimeLog[] = [
   },
   {
     id: 'apr25',
+    employeeName: 'Tai Manguiat',
+    department: 'Operations',
     dayLabel: 'FRI',
     dateNumber: '25',
     monthLabel: 'APR',
@@ -48,7 +74,9 @@ export const timeLogs: TimeLog[] = [
     accentSoft: '#fff3e6',
   },
   {
-    id: 'apr24',
+    id: 'apr24-ar',
+    employeeName: 'Andrea Rivera',
+    department: 'Operations',
     dayLabel: 'THU',
     dateNumber: '24',
     monthLabel: 'APR',
@@ -59,7 +87,9 @@ export const timeLogs: TimeLog[] = [
     accentSoft: '#eef3f8',
   },
   {
-    id: 'apr23',
+    id: 'apr23-js',
+    employeeName: 'J. Santos',
+    department: 'Finance',
     dayLabel: 'WED',
     dateNumber: '23',
     monthLabel: 'APR',
@@ -71,9 +101,11 @@ export const timeLogs: TimeLog[] = [
   },
 ]
 
-export const requestItems: RequestItem[] = [
+export const employeeRequestItems: RequestItem[] = [
   {
     id: 'overtime-approval',
+    employeeName: 'Tai Manguiat',
+    department: 'Operations',
     title: 'Overtime approval',
     status: 'Pending',
     statusColor: '#d97706',
@@ -83,6 +115,7 @@ export const requestItems: RequestItem[] = [
     accentSoft: '#fff7e8',
     details: [
       { label: 'Request ID', value: 'OT-2026-0425' },
+      { label: 'Employee', value: 'Tai Manguiat' },
       { label: 'Date filed', value: 'April 25, 2026' },
       { label: 'Requested hours', value: '2h 00m' },
       { label: 'Reason', value: 'Month-end reconciliation and payroll review support.', emphasis: true },
@@ -91,6 +124,8 @@ export const requestItems: RequestItem[] = [
   },
   {
     id: 'time-correction',
+    employeeName: 'Tai Manguiat',
+    department: 'Operations',
     title: 'Time correction',
     status: 'Approved',
     statusColor: '#17835f',
@@ -100,10 +135,74 @@ export const requestItems: RequestItem[] = [
     accentSoft: '#eef8f2',
     details: [
       { label: 'Request ID', value: 'TC-2026-0419' },
+      { label: 'Employee', value: 'Tai Manguiat' },
       { label: 'Date filed', value: 'April 19, 2026' },
       { label: 'Correction', value: 'Missing clock-out', emphasis: true },
       { label: 'Adjusted time', value: '5:03 PM' },
       { label: 'Approved by', value: 'A. Rivera' },
     ],
+  },
+  {
+    id: 'leave-ar',
+    employeeName: 'M. Cruz',
+    department: 'Field Support',
+    title: 'Leave request',
+    status: 'Pending',
+    statusColor: '#d97706',
+    statusSoft: '#fff0d9',
+    summary: 'Apr 30 • Emergency leave • Awaiting final review',
+    accent: '#f59e0b',
+    accentSoft: '#fff7e8',
+    details: [
+      { label: 'Request ID', value: 'LV-2026-0430' },
+      { label: 'Employee', value: 'M. Cruz' },
+      { label: 'Date filed', value: 'April 29, 2026' },
+      { label: 'Coverage', value: 'Supervisor-managed coverage' },
+      { label: 'Reason', value: 'Family medical appointment requiring full-day absence.', emphasis: true },
+      { label: 'Approver', value: 'Andrea Rivera' },
+    ],
+  },
+]
+
+export const employeeStatuses: EmployeeStatus[] = [
+  {
+    id: 'emp-1024',
+    name: 'Tai Manguiat',
+    department: 'Operations',
+    status: 'Clocked In',
+    statusColor: '#17835f',
+    statusSoft: '#ecf9f1',
+    schedule: '8:00 AM - 5:00 PM',
+    lastActivity: 'Clocked in at 8:01 AM',
+  },
+  {
+    id: 'emp-1092',
+    name: 'Andrea Rivera',
+    department: 'Operations',
+    status: 'On Break',
+    statusColor: '#d97706',
+    statusSoft: '#fff4e6',
+    schedule: '8:00 AM - 5:00 PM',
+    lastActivity: 'Break started at 12:06 PM',
+  },
+  {
+    id: 'emp-1148',
+    name: 'J. Santos',
+    department: 'Finance',
+    status: 'Late',
+    statusColor: '#dc2626',
+    statusSoft: '#feecec',
+    schedule: '8:00 AM - 5:00 PM',
+    lastActivity: 'Clocked in at 8:17 AM',
+  },
+  {
+    id: 'emp-1217',
+    name: 'M. Cruz',
+    department: 'Field Support',
+    status: 'Clocked Out',
+    statusColor: '#64748b',
+    statusSoft: '#eef3f8',
+    schedule: '7:00 AM - 4:00 PM',
+    lastActivity: 'Shift closed at 4:03 PM',
   },
 ]

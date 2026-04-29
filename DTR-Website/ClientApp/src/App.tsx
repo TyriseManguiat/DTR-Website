@@ -1,8 +1,8 @@
 import type { FormEvent, ReactNode } from 'react'
 import { useMemo, useState } from 'react'
 import './App.css'
-import { employeeProfile, requestItems, timeLogs } from './data'
-import type { AttendanceState, ModalView, RequestItem, TabId } from './types'
+import { employeeRequestItems, employeeStatuses, employeeTimeLogs, mockUsers } from './data'
+import type { AppUser, AttendanceState, EmployeeStatus, ModalView, RequestItem, TabId } from './types'
 
 const scheduledStartMinutes = 8 * 60
 
@@ -15,6 +15,8 @@ const initialAttendance: AttendanceState = {
 }
 
 function App() {
+  const [currentUser, setCurrentUser] = useState<AppUser | null>(null)
+  const [loginError, setLoginError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<TabId>('dashboard')
   const [activeModal, setActiveModal] = useState<ModalView | null>(null)
   const [attendance, setAttendance] = useState<AttendanceState>(initialAttendance)
@@ -23,10 +25,41 @@ function App() {
   const [formMessage, setFormMessage] = useState<string | null>(null)
 
   const dashboard = useMemo(() => buildDashboardState(attendance), [attendance])
+  const visibleLogs = currentUser?.role === 'admin'
+    ? employeeTimeLogs
+    : employeeTimeLogs.filter((log) => log.employeeName === currentUser?.name)
+  const visibleRequests = currentUser?.role === 'admin'
+    ? employeeRequestItems
+    : employeeRequestItems.filter((request) => request.employeeName === currentUser?.name)
   const detailRequest =
     activeModal?.type === 'request-details'
-      ? requestItems.find((item) => item.id === activeModal.requestId) ?? null
+      ? visibleRequests.find((item) => item.id === activeModal.requestId) ?? null
       : null
+
+  if (!currentUser) {
+    return (
+      <LoginScreen
+        error={loginError}
+        onLogin={(event) => {
+          event.preventDefault()
+          const formData = new FormData(event.currentTarget)
+          const email = String(formData.get('email') ?? '').trim().toLowerCase()
+          const password = String(formData.get('password') ?? '')
+          const matchedUser = mockUsers.find((user) => user.email.toLowerCase() === email && user.password === password)
+
+          if (!matchedUser) {
+            setLoginError('Invalid email or password.')
+            return
+          }
+
+          setCurrentUser(matchedUser)
+          setLoginError(null)
+          setActiveTab('dashboard')
+          setAttendance(initialAttendance)
+        }}
+      />
+    )
+  }
 
   const openLogs = (logId?: string) => {
     setActiveTab('logs')
@@ -111,17 +144,31 @@ function App() {
     }, 900)
   }
 
+  const tabItems = currentUser.role === 'admin' ? adminTabItems : employeeTabItems
+
   return (
     <>
       <div className="app-shell">
         <aside className="sidebar">
-          <div>
-            <div className="brand-mark">DTR</div>
+          <div className="sidebar-top">
+            <div className="brand-row">
+              <div className="brand-mark">DTR</div>
+              <div className="brand-lockup">
+                <span className="brand-kicker">Workforce Console</span>
+                <strong>Daily Time Record</strong>
+              </div>
+            </div>
             <div className="brand-copy">
               <h1>Daily Time Record</h1>
-              <p>React + TypeScript web workspace based on the existing mobile app.</p>
+              <p>{currentUser.role === 'admin' ? 'Administrative control workspace' : 'Employee self-service workspace'}</p>
             </div>
           </div>
+
+          <section className="sidebar-panel">
+            <span className="sidebar-panel-label">{currentUser.role === 'admin' ? 'Admin Workspace' : 'Employee Workspace'}</span>
+            <strong>{currentUser.department}</strong>
+            <p>{currentUser.role === 'admin' ? 'Company-wide attendance monitoring and approvals.' : 'Timekeeping, requests, and attendance visibility.'}</p>
+          </section>
 
           <nav className="sidebar-nav" aria-label="Primary">
             {tabItems.map((item) => (
@@ -131,21 +178,47 @@ function App() {
                 className={activeTab === item.id ? 'nav-pill active' : 'nav-pill'}
                 onClick={() => setActiveTab(item.id)}
               >
-                <span>{item.label}</span>
-                <small>{item.caption}</small>
+                <span className="nav-pill-icon" aria-hidden="true">
+                  {getTabMonogram(item.id)}
+                </span>
+                <span className="nav-pill-copy">
+                  <span>{item.label}</span>
+                  <small>{item.caption}</small>
+                </span>
               </button>
             ))}
           </nav>
 
           <section className="profile-card">
-            <div className="avatar">{employeeProfile.initials}</div>
-            <div>
-              <h2>{employeeProfile.name}</h2>
-              <p>{employeeProfile.position}</p>
+            <div className="profile-top">
+              <div className="avatar">{currentUser.initials}</div>
+              <div>
+                <h2>{currentUser.name}</h2>
+                <p>{currentUser.role === 'admin' ? `Admin • ${currentUser.position}` : currentUser.position}</p>
+              </div>
             </div>
-            <button type="button" className="secondary-button compact" onClick={() => setActiveModal({ type: 'account' })}>
-              Account details
-            </button>
+            <div className="profile-meta">
+              <span className="status-chip">{currentUser.role === 'admin' ? 'Admin access' : 'Employee access'}</span>
+              <span className="status-chip online">Online</span>
+            </div>
+            <div className="profile-actions">
+              <button type="button" className="secondary-button compact" onClick={() => setActiveModal({ type: 'account' })}>
+                Account details
+              </button>
+              <button
+                type="button"
+                className="secondary-button compact signout-button"
+                onClick={() => {
+                  setCurrentUser(null)
+                  setLoginError(null)
+                  setActiveModal(null)
+                  setFormMessage(null)
+                  setActiveTab('dashboard')
+                }}
+              >
+                Sign out
+              </button>
+            </div>
           </section>
         </aside>
 
@@ -156,8 +229,9 @@ function App() {
               <h2>{tabItems.find((item) => item.id === activeTab)?.label}</h2>
             </div>
             <div className="header-actions">
+              <div className="status-chip">{currentUser.role === 'admin' ? 'Admin access' : 'Employee access'}</div>
               <div className="status-chip online">Online</div>
-              <div className="status-chip">{employeeProfile.shiftSchedule}</div>
+              <div className="status-chip">{currentUser.shiftSchedule}</div>
             </div>
           </header>
 
@@ -174,33 +248,46 @@ function App() {
             ))}
           </div>
 
-          {activeTab === 'dashboard' && (
-            <DashboardView
-              dashboard={dashboard}
-              onClockAction={handleClockAction}
-              onBreakAction={handleBreakAction}
-              onOpenAccount={() => setActiveModal({ type: 'account' })}
-              onOpenLogs={openLogs}
-            />
-          )}
+          {activeTab === 'dashboard' &&
+            (currentUser.role === 'admin' ? (
+              <AdminDashboardView />
+            ) : (
+              <DashboardView
+                user={currentUser}
+                dashboard={dashboard}
+                onClockAction={handleClockAction}
+                onBreakAction={handleBreakAction}
+                onOpenAccount={() => setActiveModal({ type: 'account' })}
+                onOpenLogs={openLogs}
+                recentLogs={visibleLogs}
+              />
+            ))}
 
-          {activeTab === 'logs' && (
-            <LogsView
-              showAllLogs={showAllLogs}
-              focusedLogId={focusedLogId}
-              onToggleLogs={() => setShowAllLogs((value) => !value)}
-            />
-          )}
+          {activeTab === 'logs' &&
+            (currentUser.role === 'admin' ? (
+              <AdminLogsView logs={visibleLogs} />
+            ) : (
+              <LogsView
+                logs={visibleLogs}
+                showAllLogs={showAllLogs}
+                focusedLogId={focusedLogId}
+                onToggleLogs={() => setShowAllLogs((value) => !value)}
+              />
+            ))}
 
-          {activeTab === 'requests' && (
-            <RequestsView
-              onLeaveRequest={() => setActiveModal({ type: 'leave' })}
-              onCorrectionRequest={() => setActiveModal({ type: 'correction' })}
-              onOpenDetails={(requestId) => setActiveModal({ type: 'request-details', requestId })}
-            />
-          )}
+          {activeTab === 'requests' &&
+            (currentUser.role === 'admin' ? (
+              <AdminRequestsView requests={visibleRequests} onOpenDetails={(requestId) => setActiveModal({ type: 'request-details', requestId })} />
+            ) : (
+              <RequestsView
+                requests={visibleRequests}
+                onLeaveRequest={() => setActiveModal({ type: 'leave' })}
+                onCorrectionRequest={() => setActiveModal({ type: 'correction' })}
+                onOpenDetails={(requestId) => setActiveModal({ type: 'request-details', requestId })}
+              />
+            ))}
 
-          {activeTab === 'insights' && <InsightsView />}
+          {activeTab === 'insights' && <InsightsView isAdmin={currentUser.role === 'admin'} />}
         </main>
       </div>
 
@@ -211,9 +298,9 @@ function App() {
               ×
             </button>
 
-            {activeModal.type === 'account' && <AccountModal />}
+            {activeModal.type === 'account' && <AccountModal user={currentUser} />}
 
-            {activeModal.type === 'leave' && (
+            {currentUser.role !== 'admin' && activeModal.type === 'leave' && (
               <FormModal
                 title="Leave request"
                 subtitle="Submit a leave request for approval."
@@ -257,11 +344,7 @@ function App() {
                       </select>
                     </Field>
                     <Field label="Reason">
-                      <textarea
-                        name="reason"
-                        rows={7}
-                        placeholder="Describe the leave request and supporting context."
-                      />
+                      <textarea name="reason" rows={7} placeholder="Describe the leave request and supporting context." />
                     </Field>
                   </>
                 }
@@ -269,7 +352,7 @@ function App() {
               />
             )}
 
-            {activeModal.type === 'correction' && (
+            {currentUser.role !== 'admin' && activeModal.type === 'correction' && (
               <FormModal
                 title="Correction request"
                 subtitle="Submit a time log correction for review."
@@ -313,11 +396,7 @@ function App() {
                       </Field>
                     </div>
                     <Field label="Reason">
-                      <textarea
-                        name="reason"
-                        rows={7}
-                        placeholder="Describe what should be corrected and why."
-                      />
+                      <textarea name="reason" rows={7} placeholder="Describe what should be corrected and why." />
                     </Field>
                   </>
                 }
@@ -333,18 +412,61 @@ function App() {
   )
 }
 
+function LoginScreen({
+  error,
+  onLogin,
+}: {
+  error: string | null
+  onLogin: (event: FormEvent<HTMLFormElement>) => void
+}) {
+  return (
+    <div className="login-shell">
+      <section className="login-card">
+        <div className="brand-mark">DTR</div>
+        <div className="login-copy">
+          <h1>Sign in</h1>
+          <p>Access is based on the signed-in account. Admin users get company-wide dashboard, logs, and requests.</p>
+        </div>
+
+        <form className="form-stack" onSubmit={onLogin}>
+          <Field label="Email">
+            <input type="email" name="email" defaultValue="andrea.rivera@company.com" />
+          </Field>
+          <Field label="Password">
+            <input type="password" name="password" defaultValue="admin123" />
+          </Field>
+          {error ? <p className="form-message error-text">{error}</p> : null}
+          <button type="submit" className="primary-button">
+            Sign in
+          </button>
+        </form>
+
+        <div className="demo-accounts">
+          <strong>Demo accounts</strong>
+          <p>`andrea.rivera@company.com` / `admin123`</p>
+          <p>`tai.manguiat@company.com` / `employee123`</p>
+        </div>
+      </section>
+    </div>
+  )
+}
+
 function DashboardView({
+  user,
   dashboard,
   onClockAction,
   onBreakAction,
   onOpenAccount,
   onOpenLogs,
+  recentLogs,
 }: {
+  user: AppUser
   dashboard: ReturnType<typeof buildDashboardState>
   onClockAction: () => void
   onBreakAction: () => void
   onOpenAccount: () => void
   onOpenLogs: (logId?: string) => void
+  recentLogs: RequestScopedLog[]
 }) {
   return (
     <section className="view-stack">
@@ -352,10 +474,10 @@ function DashboardView({
         <div className="hero-top">
           <div>
             <p className="muted">Good morning,</p>
-            <h3>{employeeProfile.name}</h3>
+            <h3>{user.name}</h3>
           </div>
           <button type="button" className="avatar-button" onClick={onOpenAccount}>
-            <span>{employeeProfile.initials}</span>
+            <span>{user.initials}</span>
             <i />
           </button>
         </div>
@@ -364,7 +486,7 @@ function DashboardView({
           <p>{dashboard.currentDate}</p>
           <div>
             <span>Current shift</span>
-            <strong>{employeeProfile.shiftSchedule}</strong>
+            <strong>{user.shiftSchedule}</strong>
             <p>{dashboard.shiftHint}</p>
           </div>
           <div className="action-row">
@@ -396,18 +518,8 @@ function DashboardView({
           <h3>Shift timeline</h3>
         </div>
         <div className="timeline">
-          <TimelineItem
-            color={dashboard.timeline.primary.color}
-            title={dashboard.timeline.primary.title}
-            detail={dashboard.timeline.primary.detail}
-            time={dashboard.timeline.primary.time}
-          />
-          <TimelineItem
-            color={dashboard.timeline.secondary.color}
-            title={dashboard.timeline.secondary.title}
-            detail={dashboard.timeline.secondary.detail}
-            time={dashboard.timeline.secondary.time}
-          />
+          <TimelineItem color={dashboard.timeline.primary.color} title={dashboard.timeline.primary.title} detail={dashboard.timeline.primary.detail} time={dashboard.timeline.primary.time} />
+          <TimelineItem color={dashboard.timeline.secondary.color} title={dashboard.timeline.secondary.title} detail={dashboard.timeline.secondary.detail} time={dashboard.timeline.secondary.time} />
         </div>
       </section>
 
@@ -419,19 +531,55 @@ function DashboardView({
           </button>
         </div>
         <div className="compact-list">
-          <CompactLogCard log={timeLogs[0]} onClick={() => onOpenLogs('apr28')} compact />
-          <CompactLogCard log={timeLogs[1]} onClick={() => onOpenLogs('apr27')} compact />
+          {recentLogs.slice(0, 2).map((log) => (
+            <CompactLogCard key={log.id} log={log} onClick={() => onOpenLogs(log.id)} compact />
+          ))}
         </div>
       </section>
     </section>
   )
 }
 
+function AdminDashboardView() {
+  return (
+    <section className="view-stack">
+      <section className="stats-grid">
+        <article className="surface-card pad-lg">
+          <span>Employees active</span>
+          <strong className="hero-number">14</strong>
+          <p className="success-note">11 clocked in, 1 on break</p>
+        </article>
+        <article className="surface-card pad-lg">
+          <span>Open attendance issues</span>
+          <strong className="hero-number">6</strong>
+          <p className="warning-note">Needs admin attention today</p>
+        </article>
+      </section>
+
+      <section className="surface-card">
+        <div className="section-header">
+          <h3>All employee status</h3>
+          <span className="muted">Live workforce view</span>
+        </div>
+        <div className="employee-status-list">
+          {employeeStatuses.map((employee) => (
+            <EmployeeStatusRow key={employee.id} employee={employee} />
+          ))}
+        </div>
+      </section>
+    </section>
+  )
+}
+
+type RequestScopedLog = (typeof employeeTimeLogs)[number]
+
 function LogsView({
+  logs,
   showAllLogs,
   focusedLogId,
   onToggleLogs,
 }: {
+  logs: RequestScopedLog[]
   showAllLogs: boolean
   focusedLogId: string | null
   onToggleLogs: () => void
@@ -467,37 +615,55 @@ function LogsView({
           </button>
         </div>
         <div className="entry-list">
-          {timeLogs.slice(0, 3).map((log) => (
+          {logs.slice(0, 3).map((log) => (
             <LogCard key={log.id} log={log} focused={focusedLogId === log.id} />
           ))}
           {showAllLogs &&
-            timeLogs.slice(3).map((log) => (
+            logs.slice(3).map((log) => (
               <LogCard key={log.id} log={log} focused={focusedLogId === log.id} />
             ))}
         </div>
       </section>
+    </section>
+  )
+}
 
-      <section className="stats-grid">
-        <article className="stat-card success outlined">
-          <span>Overtime</span>
-          <strong>05h 20m</strong>
-          <p>Awaiting payroll lock</p>
-        </article>
-        <article className="stat-card warning outlined">
-          <span>Undertime</span>
-          <strong>00h 40m</strong>
-          <p>1 flagged entry</p>
-        </article>
+function AdminLogsView({ logs }: { logs: RequestScopedLog[] }) {
+  return (
+    <section className="view-stack">
+      <section className="surface-card">
+        <div className="section-header">
+          <h3>All employee logs</h3>
+          <span className="muted">Admin log monitor</span>
+        </div>
+        <div className="employee-status-list">
+          {logs.map((log) => (
+            <article key={log.id} className="employee-status-row">
+              <div>
+                <strong>{log.employeeName}</strong>
+                <p>
+                  {log.department} • {log.dateTitle}
+                </p>
+              </div>
+              <p>{log.summary}</p>
+              <span className="status-pill employee" style={{ color: log.accent, backgroundColor: log.accentSoft }}>
+                {log.duration}
+              </span>
+            </article>
+          ))}
+        </div>
       </section>
     </section>
   )
 }
 
 function RequestsView({
+  requests,
   onLeaveRequest,
   onCorrectionRequest,
   onOpenDetails,
 }: {
+  requests: RequestItem[]
   onLeaveRequest: () => void
   onCorrectionRequest: () => void
   onOpenDetails: (requestId: string) => void
@@ -515,47 +681,51 @@ function RequestsView({
 
       <section className="surface-card">
         <div className="section-header">
-          <h3>Open items</h3>
-          <span className="muted">View all</span>
+          <h3>My requests</h3>
+          <span className="muted">Employee queue</span>
         </div>
         <div className="request-list">
-          {requestItems.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              className="request-card"
-              style={{ ['--accent' as string]: item.accent, ['--accent-soft' as string]: item.accentSoft, ['--status-soft' as string]: item.statusSoft }}
-              onClick={() => onOpenDetails(item.id)}
-            >
-              <span className="request-strip" />
-              <div className="request-body">
-                <div>
-                  <strong>{item.title}</strong>
-                  <p>{item.summary}</p>
-                </div>
-                <span className="status-pill" style={{ color: item.statusColor }}>
-                  {item.status}
-                </span>
-              </div>
-            </button>
+          {requests.map((item) => (
+            <RequestCard key={item.id} item={item} onOpenDetails={onOpenDetails} />
           ))}
-        </div>
-      </section>
-
-      <section className="surface-card">
-        <div className="section-header">
-          <h3>Balances</h3>
-        </div>
-        <div className="metric-list">
-          <MetricRow title="Vacation leave" description="Available credits for scheduled leave." value="8.5 days" accent="info" />
-          <MetricRow title="Sick leave" description="Available credits for medical absences." value="5.0 days" accent="success" />
         </div>
       </section>
     </section>
   )
 }
 
-function InsightsView() {
+function AdminRequestsView({ requests, onOpenDetails }: { requests: RequestItem[]; onOpenDetails: (requestId: string) => void }) {
+  return (
+    <section className="view-stack">
+      <section className="stats-grid">
+        <article className="stat-card warning outlined">
+          <span>Pending approvals</span>
+          <strong>{requests.filter((request) => request.status === 'Pending').length}</strong>
+          <p>Awaiting admin review</p>
+        </article>
+        <article className="stat-card success outlined">
+          <span>Approved today</span>
+          <strong>{requests.filter((request) => request.status === 'Approved').length}</strong>
+          <p>Ready for downstream processing</p>
+        </article>
+      </section>
+
+      <section className="surface-card">
+        <div className="section-header">
+          <h3>All employee requests</h3>
+          <span className="muted">Admin approval queue</span>
+        </div>
+        <div className="request-list">
+          {requests.map((item) => (
+            <RequestCard key={item.id} item={item} onOpenDetails={onOpenDetails} showEmployee />
+          ))}
+        </div>
+      </section>
+    </section>
+  )
+}
+
+function InsightsView({ isAdmin }: { isAdmin: boolean }) {
   return (
     <section className="view-stack">
       <section className="stats-grid">
@@ -566,11 +736,36 @@ function InsightsView() {
         </article>
         <article className="surface-card pad-lg">
           <span>Exceptions</span>
-          <strong className="hero-number">14</strong>
-          <p className="warning-note">Needs review today</p>
+          <strong className="hero-number">{isAdmin ? '14' : '1'}</strong>
+          <p className="warning-note">{isAdmin ? 'Needs review today' : 'Open item on your account'}</p>
         </article>
       </section>
 
+      {isAdmin ? <AdminInsightsView /> : <EmployeeInsightsView />}
+    </section>
+  )
+}
+
+function EmployeeInsightsView() {
+  return (
+    <>
+      <section className="surface-card">
+        <div className="section-header">
+          <h3>Personal trend</h3>
+        </div>
+        <div className="metric-list">
+          <MetricRow title="Attendance consistency" description="Stable attendance performance this week." value="98%" accent="success" />
+          <MetricRow title="Late instances" description="No new late clock-ins in this pay period." value="0" accent="info" />
+          <MetricRow title="Pending requests" description="Requests still waiting for review." value="1" accent="warning" />
+        </div>
+      </section>
+    </>
+  )
+}
+
+function AdminInsightsView() {
+  return (
+    <>
       <section className="surface-card">
         <div className="section-header">
           <h3>Department trend</h3>
@@ -592,11 +787,11 @@ function InsightsView() {
           <QueueItem color="#17835f" text="2 attendance disputes are escalated to HR" count="2" />
         </div>
       </section>
-    </section>
+    </>
   )
 }
 
-function AccountModal() {
+function AccountModal({ user }: { user: AppUser }) {
   return (
     <div className="modal-content">
       <div className="modal-header">
@@ -607,10 +802,10 @@ function AccountModal() {
       </div>
 
       <section className="account-hero">
-        <div className="account-avatar">{employeeProfile.initials}</div>
+        <div className="account-avatar">{user.initials}</div>
         <div>
-          <h4>{employeeProfile.name}</h4>
-          <span className="id-badge">Employee ID: {employeeProfile.employeeId}</span>
+          <h4>{user.name}</h4>
+          <span className="id-badge">Employee ID: {user.employeeId}</span>
         </div>
       </section>
 
@@ -619,10 +814,10 @@ function AccountModal() {
           <h3>Profile</h3>
         </div>
         <div className="metric-list">
-          <MetricRow title="Department" description="" value={employeeProfile.department} accent="plain" />
-          <MetricRow title="Position" description="" value={employeeProfile.position} accent="plain" />
-          <MetricRow title="Email" description="" value={employeeProfile.email} accent="plain" />
-          <MetricRow title="Mobile" description="" value={employeeProfile.mobile} accent="plain" />
+          <MetricRow title="Department" description="" value={user.department} accent="plain" />
+          <MetricRow title="Position" description="" value={user.position} accent="plain" />
+          <MetricRow title="Email" description="" value={user.email} accent="plain" />
+          <MetricRow title="Mobile" description="" value={user.mobile} accent="plain" />
         </div>
       </section>
 
@@ -631,9 +826,9 @@ function AccountModal() {
           <h3>Work details</h3>
         </div>
         <div className="metric-list">
-          <MetricRow title="Shift schedule" description="" value={employeeProfile.shiftSchedule} accent="info" />
-          <MetricRow title="Reporting manager" description="" value={employeeProfile.manager} accent="plain" />
-          <MetricRow title="Office location" description="" value={employeeProfile.location} accent="plain" />
+          <MetricRow title="Shift schedule" description="" value={user.shiftSchedule} accent="info" />
+          <MetricRow title="Reporting manager" description="" value={user.manager} accent="plain" />
+          <MetricRow title="Office location" description="" value={user.location} accent="plain" />
         </div>
       </section>
     </div>
@@ -707,9 +902,7 @@ function FormModal({
           <h3>Request details</h3>
         </div>
         <div className="form-stack">{fields}</div>
-
         {message && <p className={messageTone === 'success' ? 'form-message success-text' : 'form-message error-text'}>{message}</p>}
-
         <div className="modal-actions">
           <button type="button" className="secondary-button" onClick={onCancel}>
             Cancel
@@ -745,7 +938,7 @@ function TimelineItem({ color, title, detail, time }: { color: string; title: st
   )
 }
 
-function CompactLogCard({ log, onClick, compact = false }: { log: (typeof timeLogs)[number]; onClick?: () => void; compact?: boolean }) {
+function CompactLogCard({ log, onClick, compact = false }: { log: RequestScopedLog; onClick?: () => void; compact?: boolean }) {
   return (
     <button type="button" className={compact ? 'compact-log-card compact' : 'compact-log-card'} onClick={onClick}>
       <div>
@@ -757,7 +950,7 @@ function CompactLogCard({ log, onClick, compact = false }: { log: (typeof timeLo
   )
 }
 
-function LogCard({ log, focused }: { log: (typeof timeLogs)[number]; focused: boolean }) {
+function LogCard({ log, focused }: { log: RequestScopedLog; focused: boolean }) {
   return (
     <article className={focused ? 'log-card focused' : 'log-card'}>
       <div className="log-date-badge" style={{ backgroundColor: log.accentSoft, color: log.accent }}>
@@ -771,6 +964,37 @@ function LogCard({ log, focused }: { log: (typeof timeLogs)[number]; focused: bo
       </div>
       <span className="log-duration">{log.duration}</span>
     </article>
+  )
+}
+
+function RequestCard({
+  item,
+  onOpenDetails,
+  showEmployee = false,
+}: {
+  item: RequestItem
+  onOpenDetails: (requestId: string) => void
+  showEmployee?: boolean
+}) {
+  return (
+    <button
+      type="button"
+      className="request-card"
+      style={{ ['--accent' as string]: item.accent, ['--accent-soft' as string]: item.accentSoft, ['--status-soft' as string]: item.statusSoft }}
+      onClick={() => onOpenDetails(item.id)}
+    >
+      <span className="request-strip" />
+      <div className="request-body">
+        <div>
+          <strong>{item.title}</strong>
+          <p>{showEmployee && item.employeeName ? `${item.employeeName} • ${item.department}` : item.summary}</p>
+          {showEmployee ? <p>{item.summary}</p> : null}
+        </div>
+        <span className="status-pill" style={{ color: item.statusColor }}>
+          {item.status}
+        </span>
+      </div>
+    </button>
   )
 }
 
@@ -806,13 +1030,26 @@ function QueueItem({ color, text, count }: { color: string; text: string; count:
   )
 }
 
+function EmployeeStatusRow({ employee }: { employee: EmployeeStatus }) {
+  return (
+    <article className="employee-status-row">
+      <div>
+        <strong>{employee.name}</strong>
+        <p>
+          {employee.department} • {employee.schedule}
+        </p>
+      </div>
+      <p>{employee.lastActivity}</p>
+      <span className="status-pill employee" style={{ color: employee.statusColor, backgroundColor: employee.statusSoft }}>
+        {employee.status}
+      </span>
+    </article>
+  )
+}
+
 function buildDashboardState(attendance: AttendanceState) {
   const now = new Date()
-  const currentDate = now.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  })
+  const currentDate = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
 
   if (!attendance.clockInTime) {
     return {
@@ -827,18 +1064,8 @@ function buildDashboardState(attendance: AttendanceState) {
       punctualityValue: '--',
       punctualityNote: 'Updates after clock in',
       timeline: {
-        primary: {
-          color: '#94a3b8',
-          title: 'Shift not started',
-          detail: 'Clock in from the dashboard to begin tracking.',
-          time: '--',
-        },
-        secondary: {
-          color: '#cbd5e1',
-          title: 'Break unavailable',
-          detail: 'Start break becomes available after clock in.',
-          time: '--',
-        },
+        primary: { color: '#94a3b8', title: 'Shift not started', detail: 'Clock in from the dashboard to begin tracking.', time: '--' },
+        secondary: { color: '#cbd5e1', title: 'Break unavailable', detail: 'Start break becomes available after clock in.', time: '--' },
       },
     }
   }
@@ -862,12 +1089,7 @@ function buildDashboardState(attendance: AttendanceState) {
       punctualityValue: punctuality.value,
       punctualityNote: punctuality.note,
       timeline: {
-        primary: {
-          color: '#1fa55b',
-          title: 'Clocked out',
-          detail: 'Daily shift completed.',
-          time: formatTime(referenceTime),
-        },
+        primary: { color: '#1fa55b', title: 'Clocked out', detail: 'Daily shift completed.', time: formatTime(referenceTime) },
         secondary: {
           color: '#1fa55b',
           title: 'Break status',
@@ -891,18 +1113,8 @@ function buildDashboardState(attendance: AttendanceState) {
       punctualityValue: punctuality.value,
       punctualityNote: punctuality.note,
       timeline: {
-        primary: {
-          color: '#1fa55b',
-          title: 'Clocked in',
-          detail: 'Recorded from dashboard.',
-          time: formatTime(attendance.clockInTime),
-        },
-        secondary: {
-          color: '#f59e0b',
-          title: 'Break started',
-          detail: 'Recorded from dashboard.',
-          time: formatTime(attendance.breakStartTime),
-        },
+        primary: { color: '#1fa55b', title: 'Clocked in', detail: 'Recorded from dashboard.', time: formatTime(attendance.clockInTime) },
+        secondary: { color: '#f59e0b', title: 'Break started', detail: 'Recorded from dashboard.', time: formatTime(attendance.breakStartTime) },
       },
     }
   }
@@ -919,18 +1131,8 @@ function buildDashboardState(attendance: AttendanceState) {
     punctualityValue: punctuality.value,
     punctualityNote: punctuality.note,
     timeline: {
-      primary: {
-        color: '#1fa55b',
-        title: 'Clocked in',
-        detail: 'Recorded from dashboard.',
-        time: formatTime(attendance.clockInTime),
-      },
-      secondary: {
-        color: '#f59e0b',
-        title: 'Break available',
-        detail: 'Start break when you need to pause.',
-        time: '--',
-      },
+      primary: { color: '#1fa55b', title: 'Clocked in', detail: 'Recorded from dashboard.', time: formatTime(attendance.clockInTime) },
+      secondary: { color: '#f59e0b', title: 'Break available', detail: 'Start break when you need to pause.', time: '--' },
     },
   }
 }
@@ -959,17 +1161,34 @@ function formatDuration(durationMs: number) {
 }
 
 function formatTime(date: Date) {
-  return date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-  })
+  return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
 }
 
-const tabItems: Array<{ id: TabId; label: string; caption: string }> = [
+const employeeTabItems: Array<{ id: TabId; label: string; caption: string }> = [
   { id: 'dashboard', label: 'Dashboard', caption: 'Shift control and attendance status' },
   { id: 'logs', label: 'Logs', caption: 'Daily entries and pay period view' },
   { id: 'requests', label: 'Requests', caption: 'Leave, correction, and approvals' },
-  { id: 'insights', label: 'Insights', caption: 'Attendance trends and action queue' },
+  { id: 'insights', label: 'Insights', caption: 'Personal attendance trends' },
 ]
+
+const adminTabItems: Array<{ id: TabId; label: string; caption: string }> = [
+  { id: 'dashboard', label: 'Dashboard', caption: 'All employee status and workforce summary' },
+  { id: 'logs', label: 'Logs', caption: 'Company-wide time log monitoring' },
+  { id: 'requests', label: 'Requests', caption: 'All employee request review' },
+  { id: 'insights', label: 'Insights', caption: 'Operational attendance analytics' },
+]
+
+function getTabMonogram(tabId: TabId) {
+  switch (tabId) {
+    case 'dashboard':
+      return 'DB'
+    case 'logs':
+      return 'LG'
+    case 'requests':
+      return 'RQ'
+    case 'insights':
+      return 'IN'
+  }
+}
 
 export default App
