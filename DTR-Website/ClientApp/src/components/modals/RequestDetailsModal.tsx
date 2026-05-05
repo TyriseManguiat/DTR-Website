@@ -1,7 +1,15 @@
 import type { RequestItem } from '../../types'
 import '../../styles/components/modals.css'
 
-export function RequestDetailsModal({ request }: { request: RequestItem }) {
+export function RequestDetailsModal({
+  request,
+  onApprove,
+  onReject,
+}: {
+  request: RequestItem
+  onApprove?: () => void
+  onReject?: () => void
+}) {
   const priorityDetail = request.details.find((detail) => detail.emphasis) ?? null
   const standardDetails = request.details.filter((detail) => !detail.emphasis)
 
@@ -96,6 +104,17 @@ export function RequestDetailsModal({ request }: { request: RequestItem }) {
           ))}
         </div>
       </section>
+
+      {(onApprove || onReject) && (
+        <section className="request-modal-actions">
+          <button type="button" className="secondary-button request-modal-button reject" onClick={onReject} disabled={request.status === 'Rejected'}>
+            Reject request
+          </button>
+          <button type="button" className="primary-button request-modal-button approve" onClick={onApprove} disabled={request.status === 'Approved'}>
+            Approve request
+          </button>
+        </section>
+      )}
     </div>
   )
 }

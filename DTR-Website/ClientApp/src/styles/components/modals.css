@@ -222,6 +222,27 @@
   text-align: right;
 }
 
+.request-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.request-modal-button {
+  min-width: 144px;
+}
+
+.request-modal-button.reject {
+  background: #fff1f1;
+  color: #dc2626;
+  border: 1px solid #f2c7c7;
+}
+
+.request-modal-button.approve {
+  box-shadow: 0 10px 24px rgba(23, 131, 95, 0.18);
+  background: linear-gradient(135deg, #17835f, #0f9a6f);
+}
+
 @media (max-width: 720px) {
   .modal-content {
     padding: 60px 20px 20px;
@@ -239,5 +260,9 @@
 
   .request-timeline-item time {
     text-align: left;
+  }
+
+  .request-modal-actions {
+    flex-direction: column-reverse;
   }
 }

@@ -18,7 +18,7 @@ import { EmployeeLogsPage } from './pages/employee/LogsPage'
 import { EmployeeRequestsPage } from './pages/employee/RequestsPage'
 import './styles/layout/app-shell.css'
 import './styles/components/surfaces.css'
-import type { AppUser, ModalView, TabId } from './types'
+import type { AppUser, ModalView, RequestItem, TabId } from './types'
 import { buildDashboardState, buildEmployeeStats, initialAttendance } from './utils/dashboard'
 
 function App() {
@@ -27,6 +27,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<TabId>('dashboard')
   const [activeModal, setActiveModal] = useState<ModalView | null>(null)
   const [attendance, setAttendance] = useState(initialAttendance)
+  const [requests, setRequests] = useState<RequestItem[]>(employeeRequestItems)
   const [focusedLogId, setFocusedLogId] = useState<string | null>(null)
   const [formMessage, setFormMessage] = useState<string | null>(null)
   const [profileMenuOpen, setProfileMenuOpen] = useState(false)
@@ -42,8 +43,8 @@ function App() {
     ? employeeTimeLogs
     : employeeTimeLogs.filter((log) => log.employeeName === currentUser?.name)
   const visibleRequests = currentUser?.role === 'admin'
-    ? employeeRequestItems
-    : employeeRequestItems.filter((request) => request.employeeName === currentUser?.name)
+    ? requests
+    : requests.filter((request) => request.employeeName === currentUser?.name)
   const detailRequest =
     activeModal?.type === 'request-details'
       ? visibleRequests.find((item) => item.id === activeModal.requestId) ?? null
@@ -69,6 +70,7 @@ function App() {
           setLoginError(null)
           setActiveTab('dashboard')
           setAttendance(initialAttendance)
+          setRequests(employeeRequestItems)
         }}
       />
     )
@@ -121,6 +123,48 @@ function App() {
     setFormMessage(null)
     setActiveTab('dashboard')
     setProfileMenuOpen(false)
+  }
+
+  const handleAdminRequestAction = (requestId: string, nextStatus: RequestItem['status']) => {
+    setRequests((current) =>
+      current.map((request) => {
+        if (request.id !== requestId) {
+          return request
+        }
+
+        const nowLabel = new Date().toLocaleString('en-US', {
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+        })
+
+        const presentation = getRequestStatusPresentation(nextStatus)
+        const actionLabel = nextStatus === 'Approved' ? 'Approved' : 'Rejected'
+        const actionNote =
+          nextStatus === 'Approved'
+            ? 'Approved by admin after attendance and supporting details were verified.'
+            : 'Rejected by admin after review of the submitted request details.'
+
+        return {
+          ...request,
+          status: nextStatus,
+          statusColor: presentation.statusColor,
+          statusSoft: presentation.statusSoft,
+          reviewer: currentUser.name,
+          reviewerComment:
+            nextStatus === 'Approved'
+              ? 'Approved for processing after review.'
+              : 'Rejected after review. Please coordinate with the administrator if resubmission is needed.',
+          lastUpdated: nowLabel,
+          timeline: [
+            ...request.timeline.filter((entry) => entry.label !== 'Approved' && entry.label !== 'Rejected' && entry.label !== 'Current status'),
+            { label: actionLabel, value: nowLabel, note: actionNote },
+          ],
+        }
+      }),
+    )
   }
 
   const handleSubmitForm = (
@@ -272,7 +316,10 @@ function App() {
 
           {activeTab === 'requests' &&
             (currentUser.role === 'admin' ? (
-              <AdminRequestsPage requests={visibleRequests} onOpenDetails={(requestId) => setActiveModal({ type: 'request-details', requestId })} />
+              <AdminRequestsPage
+                requests={visibleRequests}
+                onOpenDetails={(requestId) => setActiveModal({ type: 'request-details', requestId })}
+              />
             ) : (
               <EmployeeRequestsPage
                 requests={visibleRequests}
@@ -478,12 +525,45 @@ function App() {
               />
             )}
 
-            {detailRequest && <RequestDetailsModal request={detailRequest} />}
+            {detailRequest && (
+              <RequestDetailsModal
+                request={detailRequest}
+                onApprove={
+                  currentUser.role === 'admin'
+                    ? () => {
+                        handleAdminRequestAction(detailRequest.id, 'Approved')
+                        closeModal()
+                      }
+                    : undefined
+                }
+                onReject={
+                  currentUser.role === 'admin'
+                    ? () => {
+                        handleAdminRequestAction(detailRequest.id, 'Rejected')
+                        closeModal()
+                      }
+                    : undefined
+                }
+              />
+            )}
           </div>
         </div>
       )}
     </>
   )
+}
+
+function getRequestStatusPresentation(status: RequestItem['status']) {
+  switch (status) {
+    case 'Approved':
+      return { statusColor: '#17835f', statusSoft: '#ddf6e9' }
+    case 'Rejected':
+      return { statusColor: '#dc2626', statusSoft: '#feecec' }
+    case 'Needs Revision':
+      return { statusColor: '#b45309', statusSoft: '#fff0d9' }
+    default:
+      return { statusColor: '#d97706', statusSoft: '#fff0d9' }
+  }
 }
 
 export default App
