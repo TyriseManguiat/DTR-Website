@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DTR-Website")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7a832e375c65358c7df15636164aa3b230628a4d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9a5dea61c9f0122f76b44afb3b43bd99c70b1200")]
 [assembly: System.Reflection.AssemblyProductAttribute("DTR-Website")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DTR-Website")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
