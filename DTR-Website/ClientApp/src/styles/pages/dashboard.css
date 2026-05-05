@@ -1,5 +1,11 @@
 .hero-card {
-  padding: 24px;
+  padding: 0;
+}
+
+.employee-dashboard-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.85fr);
+  gap: 20px;
 }
 
 .hero-top h3 {
@@ -19,8 +25,8 @@
 }
 
 .shift-card {
-  margin-top: 22px;
-  padding: 26px 28px;
+  margin-top: 0;
+  padding: 22px 24px;
   border-radius: 22px;
   color: #fff;
   background:
@@ -32,21 +38,27 @@
   box-shadow: 0 20px 36px rgba(16, 47, 79, 0.2);
 }
 
+.employee-shift-card {
+  min-height: 100%;
+}
+
 .shift-card-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 24px;
+  gap: 20px;
 }
 
 .shift-card-copy {
   min-width: 0;
+  display: grid;
+  gap: 10px;
 }
 
 .shift-card-date {
-  margin: 0 0 14px;
-  font-size: 0.92rem;
-  font-weight: 600;
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 500;
   color: rgba(255, 255, 255, 0.72);
 }
 
@@ -56,26 +68,100 @@
   justify-content: flex-end;
 }
 
-.shift-card p,
-.shift-card span {
-  color: rgba(255, 255, 255, 0.82);
-}
-
-.shift-card span {
-  display: inline-block;
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
 .shift-card strong {
   display: block;
-  margin-top: 10px;
   font-size: clamp(2.2rem, 4vw, 3.25rem);
   line-height: 1;
   font-variant-numeric: tabular-nums;
   color: #fff;
+}
+
+.employee-greeting {
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.employee-user-name {
+  margin: 0;
+  font-size: clamp(1.85rem, 3vw, 2.55rem);
+  line-height: 1.05;
+  color: #fff;
+}
+
+.employee-time-block {
+  display: grid;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.employee-time-block span {
+  display: inline-block;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.employee-status-card {
+  display: grid;
+  gap: 16px;
+}
+
+.employee-status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.employee-status-metric {
+  padding: 14px 15px;
+  border-radius: 16px;
+  border: 1px solid #e3ebf3;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+}
+
+.employee-status-metric span {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6d7f95;
+}
+
+.employee-status-metric strong {
+  display: block;
+  margin-top: 8px;
+  color: #0f1f33;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.employee-status-metric p {
+  margin-top: 8px;
+  color: #5f7188;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.employee-status-note {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #f4f8fc;
+  border: 1px solid #e3ebf3;
+}
+
+.employee-status-note strong {
+  color: #0f1f33;
+  font-size: 1rem;
+}
+
+.employee-status-note p {
+  margin-top: 6px;
+  color: #5f7188;
+  font-size: 0.92rem;
+  line-height: 1.45;
 }
 
 .shift-action-button {
@@ -86,10 +172,200 @@
   box-shadow: 0 12px 26px rgba(8, 15, 28, 0.16);
 }
 
+.admin-command-card {
+  background:
+    radial-gradient(circle at top right, rgba(250, 204, 21, 0.16), transparent 28%),
+    linear-gradient(135deg, #0f2237, #173b60 62%, #22577d);
+}
+
+.admin-command-header {
+  align-items: stretch;
+}
+
+.admin-greeting {
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.admin-user-name {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  line-height: 1.04;
+}
+
+.admin-date-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.admin-date-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #f8c34a;
+  box-shadow: 0 0 0 4px rgba(248, 195, 74, 0.16);
+}
+
+.admin-hero-panel {
+  min-width: 280px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  align-content: start;
+}
+
+.admin-hero-metric {
+  min-height: 96px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  display: grid;
+  align-content: space-between;
+}
+
+.admin-hero-metric span {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.admin-hero-metric strong {
+  margin-top: 10px;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.admin-dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 20px;
+}
+
+.admin-queue-list {
+  gap: 10px;
+}
+
+.admin-queue-card {
+  display: grid;
+  grid-template-columns: 4px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid #e3ebf3;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+}
+
+.admin-queue-card strong {
+  display: block;
+  color: #0f1f33;
+}
+
+.admin-queue-card p {
+  margin-top: 4px;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: #5f7188;
+}
+
+.admin-queue-bar {
+  width: 4px;
+  min-height: 56px;
+  border-radius: 999px;
+}
+
+.admin-queue-count {
+  min-width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.admin-status-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.admin-status-chip {
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid #e3ebf3;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+}
+
+.admin-status-chip span {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6d7f95;
+}
+
+.admin-status-chip strong {
+  display: block;
+  margin-top: 8px;
+  color: #0f1f33;
+  font-size: 1.2rem;
+}
+
+.admin-status-chip.success {
+  border-color: #c9ead7;
+}
+
+.admin-status-chip.warning {
+  border-color: #f6ddb5;
+}
+
+.admin-status-chip.danger {
+  border-color: #f2c7c7;
+}
+
+.admin-status-chip.neutral {
+  border-color: #dde5ee;
+}
+
+.employee-summary-section {
+  gap: 14px;
+}
+
+.employee-stats-grid {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+}
+
+.employee-stat-card {
+  min-height: 112px;
+  padding: 18px 16px;
+}
+
 @media (max-width: 720px) {
   .shift-card-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .employee-dashboard-top {
+    grid-template-columns: 1fr;
   }
 
   .shift-card-action {
@@ -99,5 +375,23 @@
 
   .shift-action-button {
     width: 100%;
+  }
+
+  .employee-status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-hero-panel,
+  .admin-dashboard-grid {
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+
+  .admin-status-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .shift-card {
+    padding: 20px;
   }
 }
