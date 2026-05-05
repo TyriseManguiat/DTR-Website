@@ -42,13 +42,21 @@ export type RequestItem = {
   employeeName?: string
   department?: string
   title: string
-  status: 'Pending' | 'Approved'
+  requestType: 'Leave' | 'Correction' | 'Overtime'
+  status: 'Pending' | 'Approved' | 'Rejected' | 'Needs Revision'
   statusColor: string
   statusSoft: string
   summary: string
+  submittedAt: string
+  effectiveLabel: string
+  lastUpdated: string
+  reviewer: string
+  reviewerComment: string
+  sourceProof?: string
   accent: string
   accentSoft: string
   details: Array<{ label: string; value: string; emphasis?: boolean }>
+  timeline: Array<{ label: string; value: string; note: string }>
 }
 
 export type EmployeeStatus = {
