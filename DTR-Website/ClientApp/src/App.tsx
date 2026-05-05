@@ -7,7 +7,7 @@ import { FormModal } from './components/forms/FormModal'
 import { RequestDetailsModal } from './components/modals/RequestDetailsModal'
 import { LoginScreen } from './components/shared/LoginScreen'
 import { adminTabItems, employeeTabItems, getTabMonogram } from './config/navigation'
-import { employeeRequestItems, employeeTimeLogs, mockUsers } from './data'
+import { employeeRequestItems, employeeStatuses, employeeTimeLogs, mockUsers } from './data'
 import { AdminDashboardPage } from './pages/admin/DashboardPage'
 import { AdminInsightsPage } from './pages/admin/InsightsPage'
 import { AdminLogsPage } from './pages/admin/LogsPage'
@@ -212,7 +212,7 @@ function App() {
         </aside>
 
         <main className="workspace">
-          {activeTab !== 'requests' && (
+          {activeTab !== 'requests' && activeTab !== 'dashboard' && (
             <header className="workspace-header">
               <div>
                 <p className="eyebrow">{tabItems.find((item) => item.id === activeTab)?.caption}</p>
@@ -236,7 +236,19 @@ function App() {
 
           {activeTab === 'dashboard' &&
             (currentUser.role === 'admin' ? (
-              <AdminDashboardPage />
+              <AdminDashboardPage
+                user={currentUser}
+                currentDate={now.toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+                logs={visibleLogs}
+                requests={visibleRequests}
+                statuses={employeeStatuses}
+                onOpenLogs={() => setActiveTab('logs')}
+              />
             ) : (
               <EmployeeDashboardPage
                 user={currentUser}
