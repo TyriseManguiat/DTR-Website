@@ -212,7 +212,7 @@ function App() {
         </aside>
 
         <main className="workspace">
-          {activeTab !== 'requests' && activeTab !== 'dashboard' && (
+          {activeTab !== 'requests' && activeTab !== 'dashboard' && activeTab !== 'logs' && (
             <header className="workspace-header">
               <div>
                 <p className="eyebrow">{tabItems.find((item) => item.id === activeTab)?.caption}</p>

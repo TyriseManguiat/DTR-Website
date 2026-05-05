@@ -5,8 +5,10 @@ export function CompactLogCard({ log, onClick, compact = false }: { log: TimeLog
   return (
     <button type="button" className={compact ? 'compact-log-card compact' : 'compact-log-card'} onClick={onClick}>
       <div>
-        <strong>{compact ? log.dateTitle.replace(',', '') : log.dateTitle}</strong>
-        <p>{compact ? log.summary.replace(' • 12:01 PM break • 1:04 PM resume', '') : log.summary}</p>
+        <strong>
+          {compact && log.employeeName ? `${log.employeeName} • ${log.dateTitle.replace(',', '')}` : compact ? log.dateTitle.replace(',', '') : log.dateTitle}
+        </strong>
+        <p>{log.summary}</p>
       </div>
       <span>{log.duration}</span>
     </button>

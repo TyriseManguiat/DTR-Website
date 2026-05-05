@@ -4,6 +4,80 @@
   gap: 12px;
 }
 
+.admin-logs-overview {
+  display: grid;
+  gap: 18px;
+}
+
+.admin-logs-overview-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-log-toolbar {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-log-filter {
+  display: grid;
+  gap: 6px;
+}
+
+.admin-log-filter span {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6d7f95;
+}
+
+.admin-log-filter select {
+  min-width: 220px;
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid #dbe4ef;
+  background: #f8fbff;
+  color: #122033;
+}
+
+.admin-log-list {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-log-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #e3ebf3;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+}
+
+.admin-log-main strong {
+  display: block;
+  color: #0f1f33;
+}
+
+.admin-log-main p,
+.admin-log-summary {
+  margin: 4px 0 0;
+  color: #5f7188;
+}
+
+.admin-log-summary {
+  line-height: 1.45;
+}
+
 .log-filter-group {
   display: flex;
   gap: 10px;
@@ -239,6 +313,15 @@
 @media (max-width: 720px) {
   .log-summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-logs-overview-top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-log-row {
+    grid-template-columns: 1fr;
   }
 
   .period-stats,
