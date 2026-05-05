@@ -1,0 +1,283 @@
+.compact-list,
+.entry-list {
+  display: grid;
+  gap: 12px;
+}
+
+.log-filter-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.log-filter {
+  padding: 10px 14px;
+  border: 1px solid #dbe4ef;
+  border-radius: 999px;
+  background: #f8fbff;
+  color: #4c6179;
+  font-weight: 700;
+}
+
+.log-filter.active {
+  background: #122033;
+  border-color: #122033;
+  color: #fff;
+}
+
+.log-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.log-summary-card {
+  padding: 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fbfdff 0%, #f5f9ff 100%);
+  border: 1px solid #dbe4ef;
+}
+
+.log-summary-card span {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.log-summary-card strong {
+  color: #0f1f33;
+  font-size: 1.45rem;
+}
+
+.compact-log-card {
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #f8fbff 0%, #f2f6fb 100%);
+  border: 1px solid #e2ebf3;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.compact-log-card:hover {
+  transform: translateY(-1px);
+}
+
+.compact-log-card.compact:first-child {
+  background: linear-gradient(180deg, #f5f9ff 0%, #eef5ff 100%);
+}
+
+.period-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+}
+
+.log-table {
+  margin-top: 18px;
+}
+
+.log-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.log-pagination .text-button[disabled] {
+  color: #94a3b8;
+  cursor: default;
+}
+
+.log-pagination-label {
+  color: #5f7188;
+  font-size: 0.9rem;
+}
+
+.log-table-head,
+.log-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.6fr) repeat(4, minmax(90px, 0.8fr)) minmax(100px, 0.8fr);
+  gap: 14px;
+  align-items: center;
+}
+
+.log-table-head {
+  padding: 0 0 12px;
+  border-bottom: 1px solid #e2ebf3;
+  color: #678099;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.log-row {
+  padding: 16px 0;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.log-row.focused {
+  padding: 16px;
+  border: 1px solid #d7e7ff;
+  border-radius: 18px;
+  background: #eef4ff;
+}
+
+.log-row:last-child {
+  border-bottom: 0;
+}
+
+.log-empty-state {
+  padding: 28px;
+  border: 1px dashed #d7e3ef;
+  border-radius: 18px;
+  background: #fbfdff;
+  text-align: center;
+}
+
+.log-empty-state strong {
+  display: block;
+  color: #0f1f33;
+  margin-bottom: 6px;
+}
+
+.log-empty-state p {
+  margin: 0;
+  color: #5f7188;
+}
+
+.log-row-date strong {
+  display: block;
+  color: #0f1f33;
+}
+
+.log-row-date p {
+  margin-top: 4px;
+}
+
+.log-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.log-status.success {
+  background: #ecf9f1;
+  color: #17835f;
+}
+
+.log-status.warning {
+  background: #fff4e6;
+  color: #d97706;
+}
+
+.period-stats {
+  display: flex;
+  gap: 12px;
+}
+
+.period-stats > div {
+  min-width: 124px;
+  text-align: center;
+  padding: 6px 0;
+}
+
+.period-stats strong {
+  display: block;
+  margin: 6px 0 4px;
+  color: #0f1f33;
+  font-size: 1.2rem;
+}
+
+.log-card {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: start;
+  padding: 10px 0;
+  border-radius: 18px;
+}
+
+.log-card.focused {
+  background: #eef4ff;
+  padding: 14px;
+  border: 1px solid #d7e7ff;
+}
+
+.log-date-badge {
+  min-height: 72px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 8px;
+}
+
+.log-date-badge strong {
+  font-size: 1.5rem;
+}
+
+@media (max-width: 720px) {
+  .log-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .period-stats,
+  .period-grid,
+  .log-card {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .log-table-head {
+    display: none;
+  }
+
+  .log-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 16px;
+    border: 1px solid #edf2f7;
+    border-radius: 18px;
+  }
+
+  .log-row-date {
+    grid-column: 1 / -1;
+  }
+
+  .log-status {
+    justify-self: start;
+  }
+
+  .log-pagination {
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .log-card {
+    gap: 10px;
+  }
+
+  .log-duration {
+    justify-self: start;
+  }
+}
