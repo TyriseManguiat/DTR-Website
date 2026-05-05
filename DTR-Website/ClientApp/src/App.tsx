@@ -8,10 +8,14 @@ import { RequestDetailsModal } from './components/modals/RequestDetailsModal'
 import { LoginScreen } from './components/shared/LoginScreen'
 import { adminTabItems, employeeTabItems, getTabMonogram } from './config/navigation'
 import { employeeRequestItems, employeeTimeLogs, mockUsers } from './data'
-import { DashboardPage, AdminDashboardPage } from './pages/DashboardPage'
-import { InsightsPage } from './pages/InsightsPage'
-import { AdminLogsPage, LogsPage } from './pages/LogsPage'
-import { AdminRequestsPage, RequestsPage } from './pages/RequestsPage'
+import { AdminDashboardPage } from './pages/admin/DashboardPage'
+import { AdminInsightsPage } from './pages/admin/InsightsPage'
+import { AdminLogsPage } from './pages/admin/LogsPage'
+import { AdminRequestsPage } from './pages/admin/RequestsPage'
+import { EmployeeDashboardPage } from './pages/employee/DashboardPage'
+import { EmployeeInsightsPage } from './pages/employee/InsightsPage'
+import { EmployeeLogsPage } from './pages/employee/LogsPage'
+import { EmployeeRequestsPage } from './pages/employee/RequestsPage'
 import './styles/layout/app-shell.css'
 import './styles/components/surfaces.css'
 import type { AppUser, ModalView, TabId } from './types'
@@ -208,7 +212,7 @@ function App() {
         </aside>
 
         <main className="workspace">
-          {!(activeTab === 'requests' || (currentUser.role !== 'admin' && (activeTab === 'dashboard' || activeTab === 'logs'))) && (
+          {activeTab !== 'requests' && (
             <header className="workspace-header">
               <div>
                 <p className="eyebrow">{tabItems.find((item) => item.id === activeTab)?.caption}</p>
@@ -234,7 +238,7 @@ function App() {
             (currentUser.role === 'admin' ? (
               <AdminDashboardPage />
             ) : (
-              <DashboardPage
+              <EmployeeDashboardPage
                 user={currentUser}
                 dashboard={dashboard}
                 stats={buildEmployeeStats(visibleLogs)}
@@ -248,7 +252,7 @@ function App() {
             (currentUser.role === 'admin' ? (
               <AdminLogsPage logs={visibleLogs} />
             ) : (
-              <LogsPage
+              <EmployeeLogsPage
                 logs={visibleLogs}
                 focusedLogId={focusedLogId}
               />
@@ -258,7 +262,7 @@ function App() {
             (currentUser.role === 'admin' ? (
               <AdminRequestsPage requests={visibleRequests} onOpenDetails={(requestId) => setActiveModal({ type: 'request-details', requestId })} />
             ) : (
-              <RequestsPage
+              <EmployeeRequestsPage
                 requests={visibleRequests}
                 onLeaveRequest={() => setActiveModal({ type: 'leave' })}
                 onCorrectionRequest={() => setActiveModal({ type: 'correction' })}
@@ -266,7 +270,7 @@ function App() {
               />
             ))}
 
-          {activeTab === 'insights' && <InsightsPage isAdmin={currentUser.role === 'admin'} />}
+          {activeTab === 'insights' && (currentUser.role === 'admin' ? <AdminInsightsPage /> : <EmployeeInsightsPage />)}
         </main>
       </div>
 
